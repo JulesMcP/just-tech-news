@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/connection');
 
@@ -46,8 +47,19 @@ User.init(
     },
     {
         // TABLE CONFIGURATION OPTIONS GO HERE (https://sequeliz.org/v5/manual/models-definition.html#configuration))
-
-        // pass in our imported sequelize connection (the direct connection to our database)
+        hooks: {
+            // set up beforeCreate lifecycle "hook" functionality
+            async beforeCreate(newUserData) {
+                newUserData.password = await bcrypt.hash(newUserData.password, 10);
+                return newUserData;
+            },
+            // set up beforeUpdate lifecycle "hook" functionality
+            async beforeUpdate(updatedUserData) {
+                updatedUserData.password = await bcrypt.hash(updatedUserData.password, 10);
+                return updatedUserData;
+            }
+        },
+            // pass in our imported sequelize connection (the direct connection to our database)
         sequelize,
         // don't automatically create createdAr/updatedAt timestamp fields
         timestamps: false,
@@ -57,7 +69,7 @@ User.init(
         underscored: true,
         // make it so our model name stays lowercase in the database
         modelName: 'user'
-    }
+    },
 );
 
 module.exports = User;
