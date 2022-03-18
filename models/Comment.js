@@ -7,16 +7,13 @@ Comment.init(
     {
         id: {
             type: DataTypes.INTEGER,
+            allowNull: false,
             primaryKey: true,
             autoIncrement: true
         },
         comment_text: {
             type: DataTypes.STRING,
             allowNull: false,
-            reference: {
-                model: 'user',
-                key: 'id'
-            },
             validate: {
                 // comment must be at least one character long
                 len: [1]
